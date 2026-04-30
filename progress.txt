@@ -1,0 +1,2 @@
+1. Configure next.config.ts with output export and trailingSlash true
+2. Setup pnpm workspace configuration

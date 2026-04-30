@@ -1,5 +1,3 @@
-Configure next.config.ts with output export and trailingSlash true
-Setup pnpm workspace configuration
 Add Node version config (.nvmrc or .node-version)
 Setup .gitignore with required entries
 Configure tsconfig paths and strict mode
