@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 
 export default function Navbar() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function Navbar() {
         </div>
 
         {/* Links */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div className="hidden items-center gap-6 sm:flex">
             {navLinks.map((link) => {
               const isActive = pathname.startsWith(link.href) && link.href !== '#'
@@ -114,8 +115,48 @@ export default function Navbar() {
               </svg>
             )}
           </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 sm:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+            aria-label="Toggle menu"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
-    </nav >
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 backdrop-blur-md dark:bg-zinc-950/95">
+          <div className="space-y-1 px-4 pb-4 pt-2">
+            {navLinks.map((link) => {
+              const isActive = pathname.startsWith(link.href) && link.href !== '#'
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block rounded-lg px-3 py-2 text-base font-medium transition-colors ${
+                    isActive
+                      ? 'bg-zinc-100 text-teal-600 dark:bg-zinc-900/50 dark:text-teal-400'
+                      : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/30 dark:hover:text-white'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </nav>
   )
 }
