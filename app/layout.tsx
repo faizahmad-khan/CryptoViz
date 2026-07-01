@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CryptoViz",
-  description: "Interactive cryptography visualizer for learning classical and modern cryptographic algorithms.",
+  title: 'CryptoViz',
+  description: 'A visualizer for various cryptographic algorithms.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
