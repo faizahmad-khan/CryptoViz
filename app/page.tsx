@@ -2,50 +2,93 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "../components/layout/Navbar";
 
-
 export default function Home() {
   const categories = [
     {
-      title: 'Classical Ciphers',
-      description: 'Explore the foundations of cryptography: Caesar, ROT13, Vigenère, Playfair, and Rail Fence transposition ciphers.',
+      title: "Classical Ciphers",
+      description:
+        "Explore the foundations of cryptography: Caesar, ROT13, Vigenère, Playfair, and Rail Fence transposition ciphers.",
       icon: (
-        <svg className="h-6 w-6 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        <svg
+          className="h-6 w-6 text-teal-600 dark:text-teal-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+          />
         </svg>
       ),
-      link: '/visualizer/caesar/',
+      link: "/visualizer/caesar/",
     },
     {
-      title: 'Symmetric Cryptosystems',
-      description: 'Watch block and stream ciphers like XOR, One-Time Pad, DES, Triple-DES, and standard AES expand keys and encrypt blocks.',
+      title: "Symmetric Cryptosystems",
+      description:
+        "Watch block and stream ciphers like XOR, One-Time Pad, DES, Triple-DES, and standard AES expand keys and encrypt blocks.",
       icon: (
-        <svg className="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <svg
+          className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
         </svg>
       ),
-      link: '/visualizer/aes/',
+      link: "/visualizer/aes/",
     },
     {
-      title: 'Secure Hash Functions',
-      description: 'Analyse compression, round constants, and padding structures of MD5, SHA-256, SHA-512, HMAC, and Bcrypt derivation.',
+      title: "Secure Hash Functions",
+      description:
+        "Analyse compression, round constants, and padding structures of MD5, SHA-256, SHA-512, HMAC, and Bcrypt derivation.",
       icon: (
-        <svg className="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        <svg
+          className="h-6 w-6 text-emerald-600 dark:text-emerald-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          />
         </svg>
       ),
-      link: '/visualizer/sha256/',
+      link: "/visualizer/sha256/",
     },
     {
-      title: 'Asymmetric Cryptography',
-      description: 'Demystify RSA encryption, Diffie-Hellman key exchanges (featuring paint mixing), and ECDSA P-256 elliptic signatures.',
+      title: "Asymmetric Cryptography",
+      description:
+        "Demystify RSA encryption, Diffie-Hellman key exchanges (featuring paint mixing), and ECDSA P-256 elliptic signatures.",
       icon: (
-        <svg className="h-6 w-6 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        <svg
+          className="h-6 w-6 text-rose-600 dark:text-rose-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+          />
         </svg>
       ),
-      link: '/visualizer/rsa/',
+      link: "/visualizer/rsa/",
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans transition-colors duration-300">
@@ -60,7 +103,7 @@ export default function Home() {
 
         <div className="mx-auto max-w-5xl text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-5xl lg:text-6xl">
-            Interact with Cryptography,{' '}
+            Interact with Cryptography,{" "}
             <span className="bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent dark:from-teal-400 dark:to-indigo-450">
               Visualised in Real-Time
             </span>
@@ -94,7 +137,7 @@ export default function Home() {
               href="https://github.com"
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg border border-zinc-250 bg-white px-6 py-3 text-sm font-semibold text-zinc-800 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-250 dark:hover:bg-zinc-850"
+              className="rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-800 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
               View Documentation
             </a>
@@ -143,20 +186,24 @@ export default function Home() {
           </span>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-zinc-400 dark:text-zinc-500">
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Next.js 15 Static Export
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Next.js
+              15 Static Export
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Web Worker Parallel Threading
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Web
+              Worker Parallel Threading
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Tailwind v4 CSS Engine
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Tailwind
+              v4 CSS Engine
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Zero Server Overhead
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" /> Zero
+              Server Overhead
             </span>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
