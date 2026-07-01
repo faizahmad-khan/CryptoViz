@@ -35,9 +35,9 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Playground', href: '/visualizer/caesar/' },
-    { name: 'Docs', href: '#' },
-    { name: 'Resources', href: '#' },
-  ]
+    { name: 'Docs', href: '/docs' },
+    { name: 'Resources', href: '/resources' },
+  ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -73,11 +73,10 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-zinc-950 dark:hover:text-white ${
-                    isActive
-                      ? 'text-teal-600 dark:text-teal-400'
-                      : 'text-zinc-600 dark:text-zinc-400'
-                  }`}
+                  className={`text-sm font-medium transition-colors hover:text-zinc-950 dark:hover:text-white ${isActive
+                    ? 'text-teal-600 dark:text-teal-400'
+                    : 'text-zinc-600 dark:text-zinc-400'
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -90,7 +89,7 @@ export default function Navbar() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
@@ -100,7 +99,7 @@ export default function Navbar() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
+                  d="M12 3v1 M12 20v1 M3 12h1 M20 12h1 M5.636 5.636l.707.707 M18.364 5.636l-.707.707 M5.636 18.364l.707-.707 M18.364 18.364l-.707-.707 M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                 />
               </svg>
             ) : (
@@ -117,6 +116,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-    </nav>
+    </nav >
   )
 }
