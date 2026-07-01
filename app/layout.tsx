@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "CryptoViz",
   description: "Interactive cryptography visualizer for learning classical and modern cryptographic algorithms.",
 }; 
-//  replaced the metadata to CryptoViz
+
 
 export default function RootLayout({
   children,
