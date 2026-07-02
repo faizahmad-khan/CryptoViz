@@ -12,6 +12,37 @@ interface CipherLayoutProps {
   cipher: CipherDefinition
 }
 
+interface HistoryEntry {
+  id: string
+  input: string
+  key: string
+  action: 'encrypt' | 'decrypt'
+  output: string
+  timestamp: string
+}
+
+const getHistoryStorageKey = (cipherId: string) => `cryptoviz-history-${cipherId}`
+
+const isValidHistoryEntry = (entry: unknown): entry is HistoryEntry => {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    'id' in entry &&
+    'input' in entry &&
+    'key' in entry &&
+    'action' in entry &&
+    'output' in entry &&
+    'timestamp' in entry
+  )
+}
+
+const isValidHistoryArray = (data: unknown): data is HistoryEntry[] => {
+  return (
+    Array.isArray(data) &&
+    data.every(isValidHistoryEntry)
+  )
+}
+
 export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const { runCipher, loading, error: workerError } = useCipherWorker()
 
@@ -28,6 +59,8 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [currentStep, setCurrentStep] = useState(0)
+  const [activeTab, setActiveTab] = useState<'result' | 'history'>('result')
+  const [history, setHistory] = useState<HistoryEntry[]>([])
 
   // Reset inputs when cipher changes
   useEffect(() => {
@@ -36,6 +69,23 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setResult(null)
     setError(null)
     setCurrentStep(0)
+    setActiveTab('result')
+
+    try {
+      const stored = window.localStorage.getItem(getHistoryStorageKey(cipher.id))
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (isValidHistoryArray(parsed)) {
+          setHistory(parsed)
+        } else {
+          setHistory([])
+        }
+      } else {
+        setHistory([])
+      }
+    } catch {
+      setHistory([])
+    }
 
     // Reset option defaults
     if (cipher.options) {
@@ -76,6 +126,30 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
       const res = await runCipher(currentAction, cipher.id, input, key, options)
       setResult(res)
       setCurrentStep(0)
+
+      if (res?.output !== undefined) {
+        const entry: HistoryEntry = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          input,
+          key,
+          action: currentAction,
+          output: String(res.output),
+          timestamp: new Date().toLocaleString(),
+        }
+
+        setHistory((prev) => {
+          const next = [entry, ...prev].slice(0, 5)
+          if (typeof window !== 'undefined') {
+            try {
+              window.localStorage.setItem(getHistoryStorageKey(cipher.id), JSON.stringify(next))
+            } catch (e) {
+              // Silently fail if localStorage is unavailable (quota exceeded, disabled, private mode, etc.)
+              console.warn('Failed to save history:', e)
+            }
+          }
+          return next
+        })
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred during calculation.')
       setResult(null)
@@ -319,46 +393,108 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
 
         {/* Output & Trace Column (Right) */}
         <div className="flex flex-col gap-4 md:col-span-7">
-          {/* Main output display */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
-            <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              {cipher.category === 'hash' ? 'Generated Hash Digest' : 'Output Result'}
-            </span>
-            <div className="mt-2 min-h-[48px] rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
-              {loading ? (
-                <span className="flex items-center gap-1.5 text-zinc-400">
-                  <span className="h-1.5 w-1.5 animate-ping rounded-full bg-teal-500" />
-                  Computing...
-                </span>
-              ) : result ? (
-                result.output
-              ) : (
-                <span className="italic text-zinc-400">No output</span>
-              )}
-            </div>
-
-            {result && result.durationMs !== undefined && (
-              <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
-                <span>Off-thread Execution time</span>
-                <span className="font-mono">{result.durationMs.toFixed(2)} ms</span>
-              </div>
-            )}
+          <div className="flex rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/80">
+            <button
+              onClick={() => setActiveTab('result')}
+              className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
+                activeTab === 'result'
+                  ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              Result
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={`flex-1 rounded-md py-1.5 text-center text-xs font-semibold transition-all ${
+                activeTab === 'history'
+                  ? 'bg-white text-zinc-950 shadow dark:bg-zinc-900 dark:text-white'
+                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              History
+            </button>
           </div>
 
-          {/* Custom Visualizer rendering (like grids, paint mixer, etc.) */}
-          {renderSpecificVisualizer()}
+          {activeTab === 'result' ? (
+            <>
+              {/* Main output display */}
+              <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+                <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  {cipher.category === 'hash' ? 'Generated Hash Digest' : 'Output Result'}
+                </span>
+                <div className="mt-2 min-h-[48px] rounded-lg bg-zinc-50 p-3 font-mono text-sm leading-relaxed break-all text-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200">
+                  {loading ? (
+                    <span className="flex items-center gap-1.5 text-zinc-400">
+                      <span className="h-1.5 w-1.5 animate-ping rounded-full bg-teal-500" />
+                      Computing...
+                    </span>
+                  ) : result ? (
+                    result.output
+                  ) : (
+                    <span className="italic text-zinc-400">No output</span>
+                  )}
+                </div>
 
-          {/* Interactive Walkthrough Trace */}
-          {result && result.steps && result.steps.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 px-1">
-                Step-by-Step Mathematical Trace
-              </span>
-              <StepAnimator
-                steps={result.steps}
-                currentStep={currentStep}
-                onStepChange={setCurrentStep}
-              />
+                {result && result.durationMs !== undefined && (
+                  <div className="mt-3 flex items-center justify-between border-t border-zinc-100 pt-3 text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+                    <span>Off-thread Execution time</span>
+                    <span className="font-mono">{result.durationMs.toFixed(2)} ms</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Custom Visualizer rendering (like grids, paint mixer, etc.) */}
+              {renderSpecificVisualizer()}
+
+              {/* Interactive Walkthrough Trace */}
+              {result && result.steps && result.steps.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 px-1">
+                    Step-by-Step Mathematical Trace
+                  </span>
+                  <StepAnimator
+                    steps={result.steps}
+                    currentStep={currentStep}
+                    onStepChange={setCurrentStep}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+              <div className="flex items-center justify-between">
+                <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  Recent Conversions
+                </span>
+                <span className="text-xs text-zinc-400 dark:text-zinc-500">Last 5</span>
+              </div>
+
+              {history.length === 0 ? (
+                <div className="mt-4 rounded-lg border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                  No conversions saved yet.
+                </div>
+              ) : (
+                <ul className="mt-4 flex flex-col gap-3">
+                  {history.map((item) => (
+                    <li key={item.id} className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+                      <div className="flex items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        <span className="font-semibold uppercase tracking-wide">{item.action}</span>
+                        <span>{item.timestamp}</span>
+                      </div>
+                      <p className="mt-2 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                        {item.input || '—'}
+                      </p>
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Output: {item.output}
+                          </p>
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Key: {item.key || '—'}
+                          </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>
