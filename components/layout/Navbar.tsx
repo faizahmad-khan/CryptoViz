@@ -36,6 +36,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Playground', href: '/visualizer/caesar/' },
+    { name: 'Benchmark', href: '/benchmark' },
     { name: 'Docs', href: '/docs' },
     { name: 'Resources', href: '/resources' },
   ];
