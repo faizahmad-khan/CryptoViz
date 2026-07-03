@@ -52,13 +52,9 @@ export function useCipherWorker() {
       new URL('../workers/cipher.worker.ts', import.meta.url)
     )
 
-    worker.onmessage = (event: MessageEvent<WorkerResponseMessage>) => {
-      let data = event.data
-      if (data instanceof Uint8Array) {
-        const decoder = new TextDecoder()
-        data = JSON.parse(decoder.decode(data))
-      }
-      const { id, success, result, error: workerError } = data as WorkerResponse
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      const { id, success, result, error: workerError } = event.data
+
       const request = activeRequestsRef.current.get(id)
 
       if (request) {
@@ -103,13 +99,10 @@ export function useCipherWorker() {
             const worker = new Worker(
               new URL('../workers/cipher.worker.ts', import.meta.url)
             )
-            worker.onmessage = (event: MessageEvent<WorkerResponseMessage>) => {
-              let data = event.data
-              if (data instanceof Uint8Array) {
-                const decoder = new TextDecoder()
-                data = JSON.parse(decoder.decode(data))
-              }
-              const { id, success, result, error: workerError } = data as WorkerResponse
+
+            worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+              const { id, success, result, error: workerError } = event.data
+
               const req = activeRequestsRef.current.get(id)
               if (req) {
                 if (success && result) req.resolve(result)
