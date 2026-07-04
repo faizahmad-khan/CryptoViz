@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Navbar from '../../../components/layout/Navbar'
 import Sidebar from '../../../components/layout/Sidebar'
 import CipherLayout from '../../../components/cipher/CipherLayout'
@@ -21,7 +21,7 @@ export default async function VisualizerPage({
   const cipher = CIPHER_REGISTRY.find((c) => c.id === resolvedParams.cipher)
 
   if (!cipher) {
-    redirect('/visualizer/caesar/')
+    notFound()
   }
 
   // Prep sidebar lists
