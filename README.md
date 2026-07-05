@@ -224,8 +224,9 @@ Ensure you have the following installed before launching:
 
 1. **Clone the repository**:
    ```bash
-   git clone [https://github.com/csxark/CryptoViz.git](https://github.com/csxark/CryptoViz.git)
-   cd cryptoviz
+   git clone https://github.com/csxark/CryptoViz.git
+   cd CryptoViz
+   ```
 
 2. **Install node dependencies**:
    ```bash
