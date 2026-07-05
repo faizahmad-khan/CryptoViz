@@ -14,7 +14,62 @@ import {
   Line,
   ScatterChart,
   Scatter,
+  LabelList,
+  Cell,
 } from 'recharts'
+
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case 'classical':
+      return '#0d9488' // Teal-600
+    case 'symmetric':
+      return '#2563eb' // Blue-600
+    case 'asymmetric':
+      return '#db2777' // Pink-600
+    case 'hash':
+      return '#16a34a' // Green-600
+    default:
+      return '#7c3aed' // Purple-600
+  }
+}
+
+const getItemColor = (item: any, index: number, chartType: string) => {
+  if (chartType === 'scatter') {
+    return getCategoryColor(item.category)
+  }
+  return index === 0 ? '#14b8a6' : index % 2 === 0 ? '#22c55e' : '#ef4444'
+}
+
+const CustomScatterTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload
+    return (
+      <div className="rounded-lg border border-zinc-200 bg-white/95 p-3 shadow-md dark:border-zinc-800 dark:bg-zinc-950/95 font-sans">
+        <p className="font-semibold text-zinc-900 dark:text-white">{data.fullName}</p>
+        <div className="mt-2 space-y-1 text-xs text-zinc-600 dark:text-zinc-400 font-sans">
+          <p>
+            <span className="font-medium text-zinc-500">Category:</span>{' '}
+            <span className="capitalize">{data.category}</span>
+          </p>
+          <p>
+            <span className="font-medium text-zinc-500">Ops/Second:</span>{' '}
+            <span className="font-semibold text-teal-600 dark:text-teal-400">{data.opsPerSec.toLocaleString()}</span>
+          </p>
+          <p>
+            <span className="font-medium text-zinc-500">Avg Time:</span>{' '}
+            <span className="font-mono">{data.avgTime.toFixed(4)} ms</span>
+          </p>
+          <p>
+            <span className="font-medium text-zinc-500">Min/Max:</span>{' '}
+            <span className="font-mono text-zinc-500">{data.minTime.toFixed(4)} / {data.maxTime.toFixed(4)} ms</span>
+          </p>
+        </div>
+      </div>
+    )
+  }
+  return null
+}
+
 
 interface ComparisonChartProps {
   results: BenchmarkResult[]
@@ -40,6 +95,7 @@ export default function ComparisonChart({
     maxTime: parseFloat(result.maxTime.toFixed(4)),
     opsPerSec: parseFloat(result.operationsPerSecond.toFixed(0)),
     fullName: result.cipherName,
+    category: result.category,
   }))
 
   const sortedData = [...chartData].sort((a, b) => a.avgTime - b.avgTime)
@@ -89,22 +145,43 @@ export default function ComparisonChart({
       case 'scatter':
         return (
           <ScatterChart
-            data={sortedData}
-            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            margin={{ top: 25, right: 35, bottom: 25, left: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-            <XAxis dataKey="opsPerSec" name="Ops/Second" />
-            <YAxis dataKey="avgTime" name="Avg Time (ms)" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255,255,255,0.95)',
-                border: '1px solid #e5e7eb',
-                borderRadius: '0.5rem',
-              }}
-              cursor={{ strokeDasharray: '3 3' }}
-              formatter={(value: any) => (typeof value === 'number' ? value.toFixed(4) : value)}
+            <XAxis
+              type="number"
+              dataKey="opsPerSec"
+              name="Ops/Second"
+              stroke="#888888"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              domain={['auto', 'auto']}
+              label={{ value: 'Operations/Second (higher is better)', position: 'insideBottom', offset: -10, fill: '#888888', fontSize: 11 }}
             />
-            <Scatter name="Algorithms" data={sortedData} fill="#14b8a6" />
+            <YAxis
+              type="number"
+              dataKey="avgTime"
+              name="Avg Time (ms)"
+              stroke="#888888"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              domain={['auto', 'auto']}
+              label={{ value: 'Avg Time (ms) (lower is better)', angle: -90, position: 'insideLeft', fill: '#888888', fontSize: 11 }}
+            />
+            <Tooltip content={<CustomScatterTooltip />} cursor={{ strokeDasharray: '3 3' }} />
+            <Scatter name="Algorithms" data={sortedData} fill="#14b8a6">
+              {sortedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getCategoryColor(entry.category)} />
+              ))}
+              <LabelList
+                dataKey="name"
+                position="top"
+                offset={10}
+                style={{ fill: '#71717a', fontSize: '9px', fontWeight: 500 }}
+              />
+            </Scatter>
           </ScatterChart>
         )
 
@@ -144,6 +221,27 @@ export default function ComparisonChart({
 
       {/* Chart Legend */}
       <div className="text-xs text-zinc-600 dark:text-zinc-400">
+        {chartType === 'scatter' && (
+          <div className="mb-4 flex flex-wrap gap-x-6 gap-y-2 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+            <span className="font-semibold text-zinc-900 dark:text-white">Categories:</span>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3.5 w-3.5 rounded bg-[#0d9488]" />
+              <span>Classical</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3.5 w-3.5 rounded bg-[#2563eb]" />
+              <span>Symmetric</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3.5 w-3.5 rounded bg-[#db2777]" />
+              <span>Asymmetric</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3.5 w-3.5 rounded bg-[#16a34a]" />
+              <span>Hash</span>
+            </div>
+          </div>
+        )}
         <p className="font-medium">Algorithms (sorted by average time):</p>
         <div className="mt-2 space-y-1">
           {sortedData.map((item, index) => (
@@ -151,8 +249,7 @@ export default function ComparisonChart({
               <div
                 className="h-3 w-3 rounded"
                 style={{
-                  backgroundColor:
-                    index === 0 ? '#14b8a6' : index % 2 === 0 ? '#22c55e' : '#ef4444',
+                  backgroundColor: getItemColor(item, index, chartType),
                 }}
               ></div>
               <span>{item.fullName}</span>
