@@ -9,6 +9,7 @@ export type CipherErrorCode =
   | 'INPUT_TOO_LONG'
   | 'INVALID_KEY'
   | 'INVALID_KEY_LENGTH'
+  | 'INVALID_INPUT'
   | 'INVALID_PADDING'
   | 'INVALID_IV'
   | 'WEAK_KEY'
