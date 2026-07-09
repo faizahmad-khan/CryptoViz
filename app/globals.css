@@ -25,6 +25,20 @@
   80% { transform: translateX(3px); }
 }
 
+@keyframes heroFloat {
+  0%,100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.animate-hero-float {
+  animation: heroFloat 8s ease-in-out infinite;
+}
+
 /* Custom global styles */
 @layer base {
   html, #__next {

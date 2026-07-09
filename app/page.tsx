@@ -115,31 +115,31 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans transition-colors duration-300">
       <Navbar />
 
-     <Analytics />
+      <Analytics />
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8">
         <div className="absolute top-0 left-1/2 -z-10 h-[600px] w-[1000px] -translate-x-1/2 stroke-zinc-200 [mask-image:radial-gradient(100%_100%_at_top,white,transparent)] dark:stroke-zinc-800">
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-indigo-500/10 blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-indigo-500/10 blur-3xl animate-hero-float" />
         </div>
 
         <div className="mx-auto max-w-5xl text-center">
-  <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-5xl lg:text-6xl">
-    
-    <span className="block mb-2">Interact with Cryptography,</span>
-    
-    
-    <span className="block text-teal-600 dark:text-teal-400 min-h-[1.2em] sm:min-h-[1.5em]">
-      <Typewriter 
-        words={[
-          "Visualised in Real-Time.",
-          "Made Simple.",
-          "Explore the World of Cryptography."
-        ]}
-      />
-    </span>
-  </h1>
-  
-  
+          <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-5xl lg:text-6xl">
+
+            <span className="block mb-2">Interact with Cryptography,</span>
+
+
+            <span className="block text-teal-600 dark:text-teal-400 min-h-[1.2em] sm:min-h-[1.5em]">
+              <Typewriter
+                words={[
+                  "Visualised in Real-Time.",
+                  "Made Simple.",
+                  "Explore the World of Cryptography."
+                ]}
+              />
+            </span>
+          </h1>
+
+
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Looking for a starting point or more instructions? Head over to{" "}
             <a
@@ -166,7 +166,7 @@ export default function Home() {
               Open Interactive Playground
             </Link>
             <a
-              href="https://github.com"
+              href="/docs"
               target="_blank"
               rel="noreferrer"
               className="rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-800 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 hover:scale-[1.02]"
@@ -175,46 +175,70 @@ export default function Home() {
             </a>
           </div>
         </div>
-      </section>
+        <div className="mt-10 mx-auto grid max-w-3xl grid-cols-1 gap-4 text-center sm:grid-cols-3">
+          <div>
+            <h3 className="text-lg font-semibold text-teal-400">⚡ Interactive</h3>
+            <p className="text-sm text-zinc-800 dark:text-zinc-400">
+              Live cryptography playground
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-teal-400">🔐 Secure</h3>
+            <p className="text-sm text-zinc-800 dark:text-zinc-400">
+              Explore modern cryptographic algorithms
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold text-teal-400">📚 Learn</h3>
+            <p className="text-sm text-zinc-800 dark:text-zinc-400">
+              Interactive documentation and resources
+            </p>
+          </div>
+        </div>
+
+
+      </section >
 
       {/* Categories Grid */}
-      <section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
+      < section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8" >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {isLoading
             ? Array.from({ length: 4 }).map((_, idx) => <SkeletonCard key={idx} />)
             : categories.map((cat, idx) => (
-                <div
-                  key={idx}
-                  className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}
-                >
-                  <div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-950/50">
-                      {cat.icon}
-                    </div>
-                    <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white transition-colors group-hover:text-teal-600 dark:group-hover:text-teal-400">
-                      {cat.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      {cat.description}
-                    </p>
+              <div
+                key={idx}
+                className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}
+              >
+                <div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-50 dark:bg-zinc-950/50">
+                    {cat.icon}
                   </div>
-
-                  <div className="mt-6 border-t border-zinc-100 pt-4 dark:border-zinc-850">
-                    <Link
-                      href={cat.link}
-                      className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-teal-600 hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
-                    >
-                      Explore Category 
-                      <span className="ml-1 transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-                    </Link>
-                  </div>
+                  <h3 className="mt-4 text-lg font-bold text-zinc-900 dark:text-white transition-colors group-hover:text-teal-600 dark:group-hover:text-teal-400">
+                    {cat.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                    {cat.description}
+                  </p>
                 </div>
-              ))}
+
+                <div className="mt-6 border-t border-zinc-100 pt-4 dark:border-zinc-850">
+                  <Link
+                    href={cat.link}
+                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-teal-600 hover:text-teal-500 dark:text-teal-400 dark:hover:text-teal-300"
+                  >
+                    Explore Category
+                    <span className="ml-1 transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+                  </Link>
+                </div>
+              </div>
+            ))}
         </div>
-      </section>
+      </section >
 
       {/* Tech Stack Info Banner */}
-      <section className="mx-auto max-w-5xl py-8 px-4 sm:px-6 lg:px-8 text-center">
+      < section className="mx-auto max-w-5xl py-8 px-4 sm:px-6 lg:px-8 text-center" >
         <div className="rounded-2xl border border-zinc-200/60 bg-zinc-50 p-6 dark:border-zinc-850 dark:bg-zinc-900/10">
           <span className="text-2xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
             Performance & Security Stack
@@ -238,10 +262,10 @@ export default function Home() {
             </span>
           </div>
         </div>
-      </section>
-       <Footer />
+      </section >
+      <Footer />
 
 
-    </div>
+    </div >
   );
 }

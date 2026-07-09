@@ -45,7 +45,7 @@ export default function Typewriter({
   }, [currentText, isDeleting, currentWordIndex, words, typingSpeed, deletingSpeed, delayBetweenWords]);
 
   return (
-    <span className="inline-flex items-center text-left min-h-[1.2em]">
+    <span className="inline-flex items-center justify-center text-center min-h-[1.2em] w-full">
      
       <span className="bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent dark:from-teal-400 dark:to-indigo-400">
         {currentText}
