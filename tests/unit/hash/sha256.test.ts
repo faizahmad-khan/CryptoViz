@@ -28,8 +28,8 @@ describe('SHA-256 Hash Unit Tests', () => {
   })
 
   // TODO: skipped — encrypt() doesn't validate >4096 byte input yet, tracked in #110
-  it.skip('validates input limit (> 4096 bytes)', () => {
-    const longInput = 'a'.repeat(4097)
+  it('validates input limit (> 2 MB shared limit)', () => {
+    const longInput = 'a'.repeat(2 * 1024 * 1024 + 1)
     expect(() => encrypt(longInput)).toThrowError(CipherError)
-  })
+   })
 })

@@ -27,10 +27,9 @@ describe('ROT13 Cipher Unit Tests', () => {
     expect(dec).toBe(input)
   })
 
-  // TODO: skipped — encrypt() doesn't validate >4096 byte input yet, tracked in #110
-  it.skip('throws correct errors for invalid input', () => {
+  it('throws correct errors for invalid input', () => {
     expect(() => encrypt('')).toThrowError(CipherError)
-    const longInput = 'A'.repeat(4097)
+    const longInput = 'A'.repeat(2 * 1024 * 1024 + 1)
     expect(() => encrypt(longInput)).toThrowError(CipherError)
   })
 

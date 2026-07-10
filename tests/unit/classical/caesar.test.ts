@@ -35,16 +35,15 @@ describe('Caesar Cipher Unit Tests', () => {
     expect(encrypt('Hello, World!', '1').output).toBe('Ifmmp, Xpsme!')
   })
 
- // TODO: skipped — encrypt() doesn't validate >4096 byte input yet, tracked in #110
-  it.skip('throws correct errors for invalid input and keys', () => {
+  it('throws correct errors for invalid input and keys', () => {
     expect(() => encrypt('', '3')).toThrowError(CipherError)
     expect(() => encrypt('', '3')).toThrow(/required/)
     expect(() => encrypt('HELLO', 'abc')).toThrowError(CipherError)
     expect(() => encrypt('HELLO', 'abc')).toThrow(/integer/)
 
-    // Max length check (> 4096 bytes)
-    const longInput = 'A'.repeat(4097)
-    expect(() => encrypt(longInput, '3')).toThrowError(CipherError)
+   // Max length check (> 2 MB shared limit)
+   const longInput = 'A'.repeat(2 * 1024 * 1024 + 1)
+   expect(() => encrypt(longInput, '3')).toThrowError(CipherError)
   })
 
   it('property-based fuzzing: encrypt then decrypt returns original for alpha/ASCII', () => {
