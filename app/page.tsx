@@ -11,15 +11,6 @@ import SkeletonCard from "../components/ui/SkeletonCard";
 
 import Footer from "../components/layout/footer";
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => window.clearTimeout(timer);
-  }, []);
 
   const categories = useMemo(() => [
     {
@@ -181,9 +172,7 @@ export default function Home() {
       {/* Categories Grid */}
       <section className="mx-auto max-w-5xl py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {isLoading
-            ? Array.from({ length: 4 }).map((_, idx) => <SkeletonCard key={idx} />)
-            : categories.map((cat, idx) => (
+          {categories.map((cat, idx) => (
                 <div
                   key={idx}
                   className={`group relative flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 dark:border-zinc-850 dark:bg-zinc-900/40 ${cat.glowClass}`}

@@ -5,7 +5,6 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import type { CipherDefinition } from '../../lib/cipher/registry'
 import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
-
 const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
 const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
 const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
