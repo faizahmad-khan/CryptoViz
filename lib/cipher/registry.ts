@@ -171,6 +171,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
       },
     ],
   },
+  {
+    id: 'chacha20',
+    name: 'ChaCha20',
+    category: 'symmetric',
+    description: 'A modern ARX-based stream cipher (RFC 8439) used in TLS 1.3, built from add-rotate-XOR quarter-rounds instead of substitution boxes.',
+    defaultKey: '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f|000000000000004a00000000:0',
+    defaultInput: 'Hello, ChaCha20!',
+    securityStatus: 'secure',
+    keyPlaceholder: '64-char hex key | 24-char hex nonce [:counter]',
+  },
   // Hash
   {
     id: 'sha256',
