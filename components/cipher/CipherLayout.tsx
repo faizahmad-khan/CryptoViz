@@ -1,29 +1,35 @@
-"use client";
+'use client'
 
-import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import type { CipherDefinition } from "../../lib/cipher/registry";
-import type { CipherResult } from "../../lib/cipher/types";
-import { useCipherWorker } from "../../lib/hooks/useCipherWorker";
-import type { AnimationSpeed } from "./StepAnimator";
-import WorkspacePresetManager from "./WorkspacePresetManager";
-import type { WorkspacePreset } from "../../lib/utils/workspacePresets";
+import { useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
+import type { CipherDefinition } from '../../lib/cipher/registry'
+import type { CipherResult } from '../../lib/cipher/types'
+import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
+import type { AnimationSpeed } from './StepAnimator'
+import WorkspacePresetManager from './WorkspacePresetManager'
+import ConversionHistory from './ConversionHistory'
+import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
 import {
   buildVisualizerPermalink,
   clampStepIndex,
   parseVisualizerPermalink,
   updateStepInCurrentUrl,
-} from "../../lib/utils/visualizerPermalink";
-import TraceTransferControls from "./TraceTransferControls";
+} from '../../lib/utils/visualizerPermalink'
+import TraceTransferControls from './TraceTransferControls'
+import {
+  loadConversionHistory,
+  saveConversionHistory,
+  type ConversionHistoryEntry,
+} from '../../lib/utils/conversionHistory'
 import {
   traceToCipherResult,
   type CipherTraceFile,
-} from "../../lib/utils/cipherTrace";
+} from '../../lib/utils/cipherTrace'
 
-const StepAnimator = dynamic(() => import("./StepAnimator"), { ssr: false });
-const PlayfairGrid = dynamic(() => import("./PlayfairGrid"), { ssr: false });
-const RailFenceViz = dynamic(() => import("./RailFenceViz"), { ssr: false });
-const DHVisualizer = dynamic(() => import("./DHVisualizer"), { ssr: false });
+const StepAnimator = dynamic(() => import('./StepAnimator'), { ssr: false })
+const PlayfairGrid = dynamic(() => import('./PlayfairGrid'), { ssr: false })
+const RailFenceViz = dynamic(() => import('./RailFenceViz'), { ssr: false })
+const DHVisualizer = dynamic(() => import('./DHVisualizer'), { ssr: false })
 
 interface CipherLayoutProps {
   cipher: CipherDefinition;
@@ -79,7 +85,32 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(1);
   const [activeTab, setActiveTab] = useState<"result" | "history">("result");
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [history, setHistory] = useState<ConversionHistoryEntry[]>([]);
+
+  // Restore a shared visualizer configuration from the URL.
+  useEffect(() => {
+    const shared = parseVisualizerPermalink(window.location.search)
+
+    if (shared.input !== undefined) setInput(shared.input)
+    if (shared.key !== undefined) setKey(shared.key)
+    if (shared.direction !== undefined && cipher.id !== 'dh') {
+      setAction(shared.direction)
+    }
+    if (shared.options.hexInput !== undefined) {
+      setHexInput(shared.options.hexInput)
+    }
+    if (shared.options.rounds !== undefined) {
+      setRounds(shared.options.rounds)
+    }
+    if (shared.options.demoMode !== undefined) {
+      setDemoMode(shared.options.demoMode)
+    }
+    if (shared.options.bobSecret !== undefined) {
+      setBobSecret(shared.options.bobSecret)
+    }
+
+    pendingSharedStepRef.current = shared.step ?? null
+  }, [cipher.id])
 
   // Restore a shared visualizer configuration from the URL.
   useEffect(() => {
@@ -120,35 +151,15 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
     setAnimationSpeed(1);
     setActiveTab("result");
 
-    try {
-      const stored = window.localStorage.getItem(
-        getHistoryStorageKey(cipher.id),
-      );
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (isValidHistoryArray(parsed)) {
-          setHistory(parsed);
-        } else {
-          setHistory([]);
-        }
-      } else {
-        setHistory([]);
-      }
-    } catch {
-      setHistory([]);
-    }
+    setHistory(loadConversionHistory(cipher.id));
 
     // Reset option defaults
     if (cipher.options) {
       cipher.options.forEach((opt) => {
-        if (opt.id === "hexInput" && shared.options.hexInput === undefined)
-          setHexInput(opt.default);
-        if (opt.id === "rounds" && shared.options.rounds === undefined)
-          setRounds(opt.default);
-        if (opt.id === "demoMode" && shared.options.demoMode === undefined)
-          setDemoMode(opt.default);
-        if (opt.id === "bobSecret" && shared.options.bobSecret === undefined)
-          setBobSecret(opt.default);
+        if (opt.id === "hexInput" && shared.options.hexInput === undefined) setHexInput(opt.default);
+        if (opt.id === "rounds" && shared.options.rounds === undefined) setRounds(opt.default);
+        if (opt.id === "demoMode" && shared.options.demoMode === undefined) setDemoMode(opt.default);
+        if (opt.id === "bobSecret" && shared.options.bobSecret === undefined) setBobSecret(opt.default);
       });
     }
 
@@ -202,7 +213,7 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
 
   const handleRun = async () => {
     const cleanUrl = updateStepInCurrentUrl(window.location.href, null);
-    window.history.replaceState(window.history.state, "", cleanUrl);
+    window.history.replaceState(window.history.state, '', cleanUrl);
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -253,8 +264,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         pendingSharedStepRef.current = null;
 
         if (res?.output !== undefined) {
-          const entry: HistoryEntry = {
+          const entry: ConversionHistoryEntry = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            cipherId: cipher.id,
             input,
             key,
             action: currentAction,
@@ -262,21 +274,9 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
             timestamp: new Date().toLocaleString(),
           };
 
-          setHistory((prev) => {
-            const next = [entry, ...prev].slice(0, 5);
-            if (typeof window !== "undefined") {
-              try {
-                window.localStorage.setItem(
-                  getHistoryStorageKey(cipher.id),
-                  JSON.stringify(next),
-                );
-              } catch (e) {
-                // Silently fail if localStorage is unavailable (quota exceeded, disabled, private mode, etc.)
-                console.warn("Failed to save history:", e);
-              }
-            }
-            return next;
-          });
+          setHistory((prev) =>
+            saveConversionHistory(cipher.id, [entry, ...prev]),
+          );
         }
       }
     } catch (err: any) {
@@ -380,20 +380,20 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   };
 
   const handleStepChange = (nextStep: number) => {
-    const safeStep = clampStepIndex(nextStep, result?.steps?.length ?? 0);
-    setCurrentStep(safeStep);
+    const safeStep = clampStepIndex(nextStep, result?.steps?.length ?? 0)
+    setCurrentStep(safeStep)
 
     if (result?.steps?.length) {
-      const nextUrl = updateStepInCurrentUrl(window.location.href, safeStep);
-      window.history.replaceState(window.history.state, "", nextUrl);
+      const nextUrl = updateStepInCurrentUrl(window.location.href, safeStep)
+      window.history.replaceState(window.history.state, '', nextUrl)
     }
-  };
+  }
 
   const handleCopyStepLink = async () => {
     const permalink = buildVisualizerPermalink(window.location.href, {
       input,
       key,
-      direction: cipher.id === "dh" ? "encrypt" : action,
+      direction: cipher.id === 'dh' ? 'encrypt' : action,
       step: currentStep,
       options: {
         hexInput,
@@ -401,10 +401,10 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         demoMode,
         bobSecret,
       },
-    });
+    })
 
-    await navigator.clipboard.writeText(permalink);
-  };
+    await navigator.clipboard.writeText(permalink)
+  }
 
   const traceOptions: Record<string, unknown> = {
     hexInput,
@@ -756,47 +756,11 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
               )}
             </>
           ) : (
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
-              <div className="flex items-center justify-between">
-                <span className="text-2xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                  Recent Conversions
-                </span>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                  Last 5
-                </span>
-              </div>
-
-              {history.length === 0 ? (
-                <div className="mt-4 rounded-lg border border-dashed border-zinc-200 p-4 text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                  No conversions saved yet.
-                </div>
-              ) : (
-                <ul className="mt-4 flex flex-col gap-3">
-                  {history.map((item) => (
-                    <li
-                      key={item.id}
-                      className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40"
-                    >
-                      <div className="flex items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                        <span className="font-semibold uppercase tracking-wide">
-                          {item.action}
-                        </span>
-                        <span>{item.timestamp}</span>
-                      </div>
-                      <p className="mt-2 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                        {item.input || "—"}
-                      </p>
-                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                        Output: {item.output}
-                      </p>
-                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                        Key: {item.key || "—"}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <ConversionHistory
+              cipherId={cipher.id}
+              history={history}
+              onHistoryChange={setHistory}
+            />
           )}
         </div>
       </div>
