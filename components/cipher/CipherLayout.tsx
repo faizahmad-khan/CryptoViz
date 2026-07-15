@@ -8,7 +8,19 @@ import { useCipherWorker } from '../../lib/hooks/useCipherWorker'
 import type { AnimationSpeed } from './StepAnimator'
 import WorkspacePresetManager from './WorkspacePresetManager'
 import ConversionHistory from './ConversionHistory'
+import StepNotes from './StepNotes'
+import BookmarkedSteps from './BookmarkedSteps'
 import type { WorkspacePreset } from '../../lib/utils/workspacePresets'
+import {
+  clearScopeAnnotations,
+  createStableStepId,
+  getScopeAnnotations,
+  loadStepAnnotationStore,
+  removeStepNote,
+  toggleStepBookmark,
+  updateStepNote,
+  type StepAnnotationStore,
+} from '../../lib/utils/stepAnnotations'
 import {
   buildVisualizerPermalink,
   clampStepIndex,
@@ -86,6 +98,14 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
   const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(1);
   const [activeTab, setActiveTab] = useState<"result" | "history">("result");
   const [history, setHistory] = useState<ConversionHistoryEntry[]>([]);
+  const [annotationStore, setAnnotationStore] = useState<StepAnnotationStore>(() => ({
+    version: 1,
+    scopes: {},
+  }));
+
+  useEffect(() => {
+    setAnnotationStore(loadStepAnnotationStore())
+  }, [])
 
   // Restore a shared visualizer configuration from the URL.
   useEffect(() => {
@@ -402,6 +422,89 @@ export default function CipherLayout({ cipher }: CipherLayoutProps) {
         bobSecret,
       },
     })
+
+    await navigator.clipboard.writeText(permalink)
+  }
+
+  const annotationScope = {
+    cipherId: cipher.id,
+    direction: cipher.id === 'dh' ? ('encrypt' as const) : action,
+  }
+
+  const activeStep = result?.steps?.[currentStep]
+  const activeStepId = activeStep
+    ? createStableStepId(activeStep.label, currentStep)
+    : null
+  const scopeAnnotations = getScopeAnnotations(
+    annotationStore,
+    annotationScope,
+  )
+  const activeAnnotation = activeStepId
+    ? scopeAnnotations.find((item) => item.stepId === activeStepId)
+    : undefined
+
+  const bookmarkedSteps = result?.steps
+    ? result.steps
+        .map((step, index) => {
+          const stepId = createStableStepId(step.label, index)
+          const annotation = scopeAnnotations.find(
+            (item) => item.stepId === stepId && item.bookmarked,
+          )
+          return annotation
+            ? { ...annotation, stepIndex: index }
+            : null
+        })
+        .filter(
+          (
+            item,
+          ): item is NonNullable<typeof item> => item !== null,
+        )
+    : []
+
+  const handleToggleStepBookmark = () => {
+    if (!activeStep || !activeStepId) return
+    setAnnotationStore(
+      toggleStepBookmark(
+        annotationStore,
+        annotationScope,
+        activeStepId,
+        activeStep.label,
+      ),
+    )
+  }
+
+  const handleSaveStepNote = (note: string) => {
+    if (!activeStep || !activeStepId) return
+    setAnnotationStore(
+      updateStepNote(
+        annotationStore,
+        annotationScope,
+        activeStepId,
+        activeStep.label,
+        note,
+      ),
+    )
+  }
+
+  const handleDeleteStepNote = () => {
+    if (!activeStepId) return
+    setAnnotationStore(
+      removeStepNote(annotationStore, annotationScope, activeStepId),
+    )
+  }
+
+  const handleClearStepAnnotations = () => {
+    if (
+      !window.confirm(
+        'Clear all notes and bookmarks for this cipher and direction?',
+      )
+    ) {
+      return
+    }
+
+    setAnnotationStore(
+      clearScopeAnnotations(annotationStore, annotationScope),
+    )
 
     await navigator.clipboard.writeText(permalink)
   }
