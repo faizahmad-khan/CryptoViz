@@ -172,6 +172,16 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     ],
   },
   {
+    id: 'rc4',
+    name: 'RC4',
+    category: 'symmetric',
+    description: 'A byte-oriented stream cipher combining a Key-Scheduling Algorithm (KSA) with a Pseudo-Random Generation Algorithm (PRGA) to produce a keystream.',
+    defaultKey: 'Key',
+    defaultInput: 'Plaintext',
+    securityStatus: 'broken',
+    keyPlaceholder: 'Secret key string (1-256 bytes)',
+  },
+  {
     id: 'chacha20',
     name: 'ChaCha20',
     category: 'symmetric',

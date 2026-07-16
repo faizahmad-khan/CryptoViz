@@ -73,6 +73,7 @@ export type CipherName =
   | 'des'
   | '3des'
   | 'aes'
+  | 'rc4'
   | 'chacha20'
   | 'rsa'
   | 'dh'
