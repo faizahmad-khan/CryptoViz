@@ -31,7 +31,7 @@ export default function HeroIllustration() {
       <style>{rotationStyles}</style>
 
       {/* Atmospheric Space (Removed bg-black and made transparent to show grid) */}
-      <div className="absolute -left-24 top-14 h-[500px] w-[500px] rounded-full border border-zinc-200/20 dark:border-[#2A2A31]/20 pointer-events-none" />
+      <div className="absolute -left-24 top-14 h-[540px] w-[540px] rounded-full border border-zinc-200/20 dark:border-[#2A2A31]/20 pointer-events-none" />
       <div className="absolute right-[-120px] top-32 h-[420px] w-[420px] rounded-full border border-zinc-200/20 dark:border-[#2A2A31]/20 pointer-events-none" />
       <div className="absolute left-[90px] top-[60px] h-[460px] w-[460px] rotate-12 rounded-full border border-teal-500/10 dark:border-[#00C2AE]/5 pointer-events-none" />
 
@@ -76,43 +76,43 @@ export default function HeroIllustration() {
 
         {/* --- 3D Orbiting Feature Blocks --- */}
         <div 
-          className="absolute h-[380px] w-[380px] pointer-events-none"
+          className="absolute h-[540px] w-[540px] pointer-events-none"
           style={{ animation: 'orbit-container 20s linear infinite', transformStyle: 'preserve-3d' }}
         >
           
           {/* AES - Top */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-5 py-4 shadow-xl">
-              <Lock className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={18} />
+            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-2xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-6 py-5 shadow-2xl">
+              <Lock className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={20} />
               <p className="text-[10px] font-medium tracking-widest text-zinc-500 dark:text-[#8A8A94] uppercase">AES-256</p>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-[#F5F5F5]">Encryption</h3>
+              <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-[#F5F5F5]">Encryption</h3>
             </div>
           </div>
 
           {/* SHA - Right */}
           <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2">
-            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-5 py-4 shadow-xl">
-              <Cpu className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={18} />
+            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-2xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-6 py-5 shadow-2xl">
+              <Cpu className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={20} />
               <p className="text-[10px] font-medium tracking-widest text-zinc-500 dark:text-[#8A8A94] uppercase">SHA-512</p>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-[#F5F5F5]">Hash Function</h3>
+              <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-[#F5F5F5]">Hash Function</h3>
             </div>
           </div>
 
           {/* RSA - Bottom */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-5 py-4 shadow-xl">
-              <KeyRound className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={18} />
+            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-2xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-6 py-5 shadow-2xl">
+              <KeyRound className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={20} />
               <p className="text-[10px] font-medium tracking-widest text-zinc-500 dark:text-[#8A8A94] uppercase">RSA</p>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-[#F5F5F5]">Asymmetric</h3>
+              <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-[#F5F5F5]">Asymmetric</h3>
             </div>
           </div>
 
           {/* ECC - Left */}
           <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2">
-            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-5 py-4 shadow-xl">
-              <Shield className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={18} />
+            <div style={{ animation: 'orbit-item 20s linear infinite' }} className="rounded-2xl border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#16161A] px-6 py-5 shadow-2xl">
+              <Shield className="mb-2 text-teal-600 dark:text-[#00C2AE]" size={20} />
               <p className="text-[10px] font-medium tracking-widest text-zinc-500 dark:text-[#8A8A94] uppercase">ECC</p>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-[#F5F5F5]">Elliptic Curve</h3>
+              <h3 className="text-[15px] font-semibold text-zinc-900 dark:text-[#F5F5F5]">Elliptic Curve</h3>
             </div>
           </div>
 
@@ -127,7 +127,7 @@ export default function HeroIllustration() {
         {/* --- Seamless Floating Shield Unit --- */}
         <div className="absolute z-10 animate-[float_6s_ease-in-out_infinite]">
           <div
-            className="relative flex h-40 w-44 items-center justify-center rounded-full
+            className="relative flex h-[152px] w-[168px] items-center justify-center rounded-full
                        border border-zinc-200 dark:border-[#2A2A31] bg-white dark:bg-[#101013]
                        shadow-[0_0_40px_rgba(20,184,166,0.1)] dark:shadow-[0_0_40px_rgba(0,194,174,0.08)]
                        animate-spin-y"
@@ -137,7 +137,7 @@ export default function HeroIllustration() {
             <div className="absolute inset-6 rounded-full border border-teal-500/10 dark:border-[#00C2AE]/5 pointer-events-none" />
 
             <Shield
-              size={80}
+              size={88}
               strokeWidth={1.5}
               className="text-teal-500 dark:text-[#00d2bd] drop-shadow-[0_0_15px_rgba(20,184,166,0.3)] dark:drop-shadow-[0_0_15px_rgba(0,194,174,0.35)]"
             />
