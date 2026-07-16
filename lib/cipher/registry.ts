@@ -302,4 +302,14 @@ export const CIPHER_REGISTRY: CipherDefinition[] = [
     securityStatus: 'secure',
     keyPlaceholder: 'p,g,y (prime, generator, public key)',
   },
+  {
+    id: 'ed25519',
+    name: 'Ed25519 (EdDSA)',
+    category: 'asymmetric',
+    description: 'Edwards-curve Digital Signature Algorithm — deterministic signatures over Curve25519, with no external randomness and no nonce-reuse failure mode.',
+    defaultKey: '',
+    defaultInput: 'hello',
+    securityStatus: 'secure',
+    keyPlaceholder: '32-byte private key hex (64 chars), or leave blank to generate one',
+  },
 ]
