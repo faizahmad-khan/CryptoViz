@@ -66,8 +66,9 @@ export default function Pbkdf2Visualizer() {
         <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-white">Derive a key with PBKDF2</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
+            <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
             <input
+              id="password"
               type="text"
               className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
               value={password}
@@ -75,8 +76,9 @@ export default function Pbkdf2Visualizer() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Iterations</label>
+            <label htmlFor="iterations" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Iterations</label>
             <input
+              id="iterations"
               type="number"
               min={10_000}
               step={10_000}
@@ -89,8 +91,9 @@ export default function Pbkdf2Visualizer() {
             </p>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hash</label>
+            <label htmlFor="hash" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Hash</label>
             <select
+              id="hash"
               className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
               value={hash}
               onChange={(e) => setHash(e.target.value as 'SHA-256' | 'SHA-512')}
@@ -100,8 +103,9 @@ export default function Pbkdf2Visualizer() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Key length</label>
+            <label htmlFor="keyLength" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Key length</label>
             <select
+              id="keyLength"
               className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
               value={keyLength}
               onChange={(e) => setKeyLength(Number(e.target.value) as 16 | 24 | 32)}
