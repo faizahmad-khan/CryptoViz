@@ -39,6 +39,7 @@ export default function Navbar() {
     { name: 'Playground', href: '/visualizer/caesar/' },
     { name: 'Compare', href: '/compare' },
     { name: 'Benchmark', href: '/benchmark' },
+    { name: 'Avalanche', href: '/avalanche' },
     { name: 'Challenge', href: '/challenge' },
     { name: 'Docs', href: '/docs' },
     { name: 'Resources', href: '/resources' },
