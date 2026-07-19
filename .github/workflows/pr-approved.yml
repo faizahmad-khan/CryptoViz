@@ -5,6 +5,11 @@ name: PR Approved
 # when the review comes from the maintainer (MAINTAINER_USERNAME below).
 # Reviews from other contributors, or reviews that are "commented" /
 # "changes_requested", are ignored entirely.
+#
+# NOTE: GitHub does not allow a user to approve their own pull request.
+# If the maintainer opens and merges their own PRs without a separate
+# collaborator approving them, this workflow will never trigger for
+# those PRs — that is expected GitHub behavior, not a bug here.
 # ==========================================================================
 
 on:
@@ -12,7 +17,10 @@ on:
     types:
       - submitted
 
+# issues:write is required because posting a PR comment goes through the
+# Issues API (issues.createComment) even though the target is a PR.
 permissions:
+  issues: write
   pull-requests: write
 
 jobs:
@@ -45,7 +53,6 @@ jobs:
           GITHUB_PROFILE_URL: ${{ env.GITHUB_PROFILE_URL }}
           LINKEDIN_URL: ${{ env.LINKEDIN_URL }}
           PORTFOLIO_URL: ${{ env.PORTFOLIO_URL }}
-          
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -57,7 +64,7 @@ jobs:
               "⭐ Star the repository",
               `👤 Follow [${process.env.MAINTAINER_NAME}](${process.env.GITHUB_PROFILE_URL}) on GitHub`,
               `💼 [LinkedIn](${process.env.LINKEDIN_URL})`,
-              `🌐 [Portfolio](${process.env.PORTFOLIO_URL})`,
+              `🌐 [Portfolio](${process.env.PORTFOLIO_URL})`
             ].join("\n");
 
             const body = [
