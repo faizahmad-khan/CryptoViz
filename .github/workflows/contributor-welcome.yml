@@ -1,0 +1,118 @@
+name: CryptoViz Community Automation
+
+on:
+  issues:
+    types: [opened, assigned]
+
+permissions:
+  issues: write
+
+jobs:
+  community:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const association = issue.author_association;
+            const firstTime =
+              association === "FIRST_TIME_CONTRIBUTOR" ||
+              association === "FIRST_TIMER";
+
+            if (context.payload.action === "opened") {
+              let body;
+
+              if (firstTime) {
+                body = [
+                  "## 🎉 Welcome to CryptoViz!",
+                  "",
+                  "Thank you for opening your **first issue**!",
+                  "",
+                  "We're excited to have you in the CryptoViz community.",
+                  "",
+                  "### ❤️ Support CryptoViz",
+                  "",
+                  "⭐ Star the repository",
+                  "🍴 Fork the repository",
+                  "👤 Follow the maintainer",
+                  "",
+                  "### 🔗 Connect with CSX Ark",
+                  "",
+                  "🐙 GitHub: https://github.com/csxark",
+                  "💼 LinkedIn: https://www.linkedin.com/in/csxark",
+                  "🌐 Portfolio: https://csxark.xyz",
+                  "",
+                  "### 🚀 Contribution Workflow",
+                  "",
+                  "1. Star ⭐",
+                  "2. Fork 🍴",
+                  "3. Wait until assigned",
+                  "4. Sync latest main",
+                  "5. Create a branch",
+                  "6. Make changes",
+                  "7. Test",
+                  "8. Raise a PR",
+                  "",
+                  "Happy Coding 💙"
+                ].join("\n");
+              } else {
+                body = [
+                  "## 💙 Welcome Back!",
+                  "",
+                  "Thank you for raising another issue for CryptoViz!",
+                  "",
+                  "We appreciate your continued contributions.",
+                  "",
+                  "⭐ Star the repository",
+                  "🍴 Fork the repository",
+                  "👤 Follow the maintainer",
+                  "",
+                  "🐙 GitHub: https://github.com/csxark",
+                  "💼 LinkedIn: https://www.linkedin.com/in/csxark",
+                  "",
+                  "We'll review your issue shortly."
+                ].join("\n");
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body
+              });
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ["needs-review"]
+              });
+            }
+
+            if (context.payload.action === "assigned") {
+              const assignee = context.payload.assignee.login;
+
+              const body = [
+                "## 🎉 Issue Assigned",
+                "",
+                `Hi @${assignee},`,
+                "",
+                "Please do the following before coding:",
+                "",
+                "- ✅ Sync your fork with the latest `main`",
+                "- ✅ Create a new feature branch",
+                "- ✅ Implement the requested changes",
+                "- ✅ Test your work",
+                "- ✅ Open a PR referencing this issue",
+                "",
+                "Happy Coding! 🚀"
+              ].join("\n");
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body
+              });
+            }
