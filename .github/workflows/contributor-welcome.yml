@@ -29,7 +29,7 @@ jobs:
                   "",
                   "Thank you for opening your **first issue**!",
                   "",
-                  "We're excited to have you in the CryptoViz community.",
+                  "A warm welcome to the CryptoViz project! We're excited to have you on board and truly appreciate your willingness to contribute. Looking forward to your creativity and meaningful contributions, especially from the branding perspective.🚀",
                   "",
                   "### ❤️ Support CryptoViz",
                   "",
@@ -45,15 +45,16 @@ jobs:
                   "",
                   "### 🚀 Contribution Workflow",
                   "",
-                  "1. Star ⭐",
-                  "2. Fork 🍴",
+                  "1. Star the repository",
+                  "2. Fork the repository",
                   "3. Wait until assigned",
                   "4. Sync latest main",
                   "5. Create a branch",
                   "6. Make changes",
-                  "7. Test",
-                  "8. Raise a PR",
+                  "7. Test them locally",
+                  "8. Raise a PR against the main branch with a reference to this issue",
                   "",
+                  "Wishing you the very best, and happy contributing! 🚀",
                   "Happy Coding 💙"
                 ].join("\n");
               } else {
@@ -96,8 +97,10 @@ jobs:
               const body = [
                 "## 🎉 Issue Assigned",
                 "",
-                `Hi @${assignee},`,
+                `Hi @${assignee}, I'm assigning this initiative to you.`,
                 "",
+                `Looking forward to your contributions!`,
+                ""''
                 "Please do the following before coding:",
                 "",
                 "- ✅ Sync your fork with the latest `main`",
@@ -106,7 +109,7 @@ jobs:
                 "- ✅ Test your work",
                 "- ✅ Open a PR referencing this issue",
                 "",
-                "Happy Coding! 🚀"
+                "Wishing you the very best, and happy contributing! 🚀🚀"
               ].join("\n");
 
               await github.rest.issues.createComment({
