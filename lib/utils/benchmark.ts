@@ -35,7 +35,7 @@ export class BenchmarkEngine {
     const hex = '0123456789abcdef'
     let result = ''
 
-    for (let i = 0; i < lengthInBytes; i++) {
+    for (let i = 0; i < lengthInBytes * 2; i++) {
       result += hex.charAt(Math.floor(Math.random() * hex.length))
     }
 
