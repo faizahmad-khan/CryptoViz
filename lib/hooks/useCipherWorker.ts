@@ -86,7 +86,7 @@ export function useCipherWorker() {
     >
   >(new Map())
 
-  // Helper to terminate the worker and reject all pending requests
+  // Helper to terminate the worker and reject all pending requests (fatal errors only)
   const terminateWorkerAndRejectAll = useCallback((reason: Error) => {
     if (workerRef.current) {
       workerRef.current.terminate()
@@ -107,6 +107,10 @@ export function useCipherWorker() {
     setLoading(false)
   }, [])
 
+  // Tracks the most recent (latest) request started by this hook instance.
+  // Any worker response that doesn't match will be ignored to prevent stale UI updates.
+  const latestRequestIdRef = useRef<string | null>(null)
+
   // Helper to create and initialize the web worker
   const createWorker = useCallback(() => {
     if (typeof window === 'undefined') return null
@@ -117,6 +121,16 @@ export function useCipherWorker() {
 
     worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       const { requestId, success, payload } = event.data
+
+      // Latest-request semantics: ignore any response that doesn't match the most recent request.
+      if (latestRequestIdRef.current && requestId !== latestRequestIdRef.current) {
+        // Still cleanup (if the request was not already removed from the map)
+        activeRequestsRef.current.delete(requestId)
+        if (activeRequestsRef.current.size === 0) {
+          setLoading(false)
+        }
+        return
+      }
 
       const request = activeRequestsRef.current.get(requestId)
 
@@ -180,9 +194,27 @@ export function useCipherWorker() {
       }
 
       return new Promise<CipherResult>((resolve, reject) => {
-        // Automatically cancel any previous running request to prevent overlap
-        if (activeRequestsRef.current.size > 0) {
-          terminateWorkerAndRejectAll(new DOMException('The user aborted a request.', 'AbortError'))
+        const id = Math.random().toString(36).substring(2, 11)
+        
+        // Mark this as the latest request. Any older in-flight requests will be considered stale
+        // and their eventual worker responses will be ignored.
+        latestRequestIdRef.current = id
+
+        // Cancel only superseded requests (do not terminate the whole worker).
+        for (const [existingId, req] of activeRequestsRef.current.entries()) {
+          if (existingId === id) continue
+          try {
+            if (req.timeoutId) clearTimeout(req.timeoutId)
+            if (req.signal && req.onAbort) {
+              req.signal.removeEventListener('abort', req.onAbort)
+            }
+            // Reject only the superseded promise to avoid hanging callers.
+            req.reject(new DOMException('The user aborted a request.', 'AbortError'))
+          } catch {
+            // Ignore secondary errors during cancellation
+          } finally {
+            activeRequestsRef.current.delete(existingId)
+          }
         }
 
         if (!workerRef.current) {
@@ -192,8 +224,6 @@ export function useCipherWorker() {
           }
         }
 
-        const id = Math.random().toString(36).substring(2, 11)
-        
         let onAbort: (() => void) | undefined
         const signal = options?.signal as AbortSignal | undefined
 
